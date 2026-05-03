@@ -1,12 +1,15 @@
 package io.ionic.starter;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
+import android.view.View;
 import android.widget.RemoteViews;
 import org.json.JSONObject;
 import java.net.URL;
@@ -23,6 +26,12 @@ public class FavoriteWidget extends AppWidgetProvider {
   static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
     RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.favorite_widget);
 
+    // Configurar clic para abrir la app (en cualquier estado)
+    Intent intent = new Intent(context, MainActivity.class);
+    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
+        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    views.setOnClickPendingIntent(R.id.widget_root, pendingIntent);
+
     try {
       // Accedemos al almacenamiento de Capacitor
       SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
@@ -30,6 +39,10 @@ public class FavoriteWidget extends AppWidgetProvider {
 
       if (favoriteGameJson != null) {
         JSONObject game = new JSONObject(favoriteGameJson);
+
+        // Mostrar layout de contenido y ocultar el vacío
+        views.setViewVisibility(R.id.widget_content_layout, View.VISIBLE);
+        views.setViewVisibility(R.id.widget_empty_layout, View.GONE);
 
         // 1. Extraer datos del JSON
         String title = game.optString("title", "Unknown Game");
@@ -64,13 +77,9 @@ public class FavoriteWidget extends AppWidgetProvider {
         }).start();
 
       } else {
-        // Estado por defecto si no hay favorito
-        views.setTextViewText(R.id.widget_title, "No tienes Favoritos");
-        views.setTextViewText(R.id.widget_store, "Abre la app");
-        views.setTextViewText(R.id.widget_sale_price, "");
-        views.setTextViewText(R.id.widget_normal_price, "");
-        views.setTextViewText(R.id.widget_savings, "");
-        views.setImageViewResource(R.id.widget_image, 0); // Limpiar imagen
+        // Estado por defecto si no hay favorito (Mejorado con layout específico)
+        views.setViewVisibility(R.id.widget_content_layout, View.GONE);
+        views.setViewVisibility(R.id.widget_empty_layout, View.VISIBLE);
       }
     } catch (Exception e) {
       e.printStackTrace();

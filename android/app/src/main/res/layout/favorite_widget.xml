@@ -1,87 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/widget_root"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="@drawable/widget_round_bg"
   android:clipToOutline="true">
 
-  <ImageView
-    android:id="@+id/widget_image"
+  <!-- VISTA CON CONTENIDO -->
+  <RelativeLayout
+    android:id="@+id/widget_content_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+      android:id="@+id/widget_image"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scaleType="centerCrop"
+      android:alpha="0.6" />
+
+    <TextView
+      android:id="@+id/widget_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="12dp"
+      android:text="Nombre del Juego"
+      android:textColor="#FFFFFF"
+      android:textSize="15sp"
+      android:textStyle="bold"
+      android:shadowColor="#000000"
+      android:shadowDx="2"
+      android:shadowDy="2"
+      android:shadowRadius="3" />
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:background="#CC000000"
+      android:padding="8dp">
+
+      <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentLeft="true">
+
+        <TextView
+          android:id="@+id/widget_store"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Tienda"
+          android:textColor="#EEEEEE"
+          android:textSize="11sp" />
+
+        <TextView
+          android:id="@+id/widget_normal_price"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="$0.00"
+          android:textColor="#AAAAAA"
+          android:textSize="10sp" />
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:gravity="end">
+
+        <TextView
+          android:id="@+id/widget_sale_price"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="$0.00"
+          android:textColor="#E1FF00"
+          android:textSize="17sp"
+          android:textStyle="bold" />
+
+        <TextView
+          android:id="@+id/widget_savings"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="-0%"
+          android:textColor="#00FF41"
+          android:textSize="11sp"
+          android:textStyle="bold" />
+      </LinearLayout>
+    </RelativeLayout>
+  </RelativeLayout>
+
+  <!-- VISTA VACÍA (EMPTY STATE) -->
+  <LinearLayout
+    android:id="@+id/widget_empty_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scaleType="centerCrop"
-    android:alpha="0.7" />
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:visibility="gone">
 
-  <TextView
-    android:id="@+id/widget_title"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="12dp"
-    android:text="Nombre del Juego"
-    android:textColor="#FFFFFF"
-    android:textSize="14sp"
-    android:textStyle="bold"
-    android:shadowColor="#000000"
-    android:shadowDx="2"
-    android:shadowDy="2"
-    android:shadowRadius="3" />
+    <ImageView
+      android:layout_width="40dp"
+      android:layout_height="40dp"
+      android:src="@android:drawable/ic_menu_revert"
+      android:alpha="0.4"
+      android:tint="#FFFFFF" />
 
-  <RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:background="#CC000000"
-    android:padding="8dp">
-
-    <LinearLayout
+    <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:orientation="vertical"
-      android:layout_alignParentLeft="true">
+      android:layout_marginTop="8dp"
+      android:text="No tienes Favoritos"
+      android:textColor="#FFFFFF"
+      android:textSize="16sp"
+      android:textStyle="bold" />
 
-      <TextView
-        android:id="@+id/widget_store"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Epic Games Store"
-        android:textColor="#EEEEEE"
-        android:textSize="11sp" />
-
-      <TextView
-        android:id="@+id/widget_normal_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="$89.99"
-        android:textColor="#AAAAAA"
-        android:textSize="10sp" />
-    </LinearLayout>
-
-    <LinearLayout
+    <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentRight="true"
-      android:layout_centerVertical="true"
-      android:orientation="vertical"
-      android:gravity="end">
-
-      <TextView
-        android:id="@+id/widget_sale_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="$4.49"
-        android:textColor="#E1FF00"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-      <TextView
-        android:id="@+id/widget_savings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="-95%"
-        android:textColor="#00FF41"
-        android:textSize="10sp"
-        android:textStyle="bold" />
-    </LinearLayout>
-  </RelativeLayout>
+      android:layout_marginTop="4dp"
+      android:text="Toca para buscar ofertas"
+      android:textColor="#BBBBBB"
+      android:textSize="12sp" />
+  </LinearLayout>
 
 </RelativeLayout>
