@@ -1,0 +1,41 @@
+<ion-header class="ion-no-border glass-header">
+  <ion-toolbar color="transparent">
+    <ion-title>Juego Favorito</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div *ngIf="isLoading" class="skeleton-container">
+    <ion-skeleton-text animated class="skeleton-image"></ion-skeleton-text>
+    <ion-skeleton-text animated class="skeleton-text"></ion-skeleton-text>
+    <ion-skeleton-text animated class="skeleton-text"></ion-skeleton-text>
+  </div>
+
+  <div *ngIf="!isLoading && !hasFavorite" class="empty-state">
+    <ion-icon name="heart-dislike-outline"></ion-icon>
+    <h2>Aún no tienes favoritos</h2>
+    <p>Ve a la pestaña de Ofertas y pulsa el icono del corazón para añadir un juego a tus favoritos.</p>
+  </div>
+
+  <div *ngIf="!isLoading && hasFavorite && favoriteGame" class="favorite-container">
+    <div class="glass-card full-card">
+      <img [src]="favoriteGame.thumb" class="favorite-image" />
+      <div class="favorite-content">
+        <h2 class="favorite-title">{{ favoriteGame.title }}</h2>
+
+        <div class="deals-list" *ngIf="favoriteDeals.length > 0">
+          <h3>Ofertas disponibles</h3>
+          <div class="deal-item" *ngFor="let deal of favoriteDeals | slice:0:3">
+            <div class="deal-info">
+              <span class="sale-price">${{ deal.price }}</span>
+              <span class="retail-price">${{ deal.retailPrice }}</span>
+            </div>
+            <ion-button fill="clear" (click)="openDeal(deal.dealID)">VER</ion-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

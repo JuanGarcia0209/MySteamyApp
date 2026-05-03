@@ -1,0 +1,71 @@
+<ion-header class="ion-no-border glass-header">
+  <ion-toolbar color="transparent">
+    <ion-title>My Steamy App</ion-title>
+  </ion-toolbar>
+  <div class="search-container">
+    <app-input (searchChange)="handleSearch($event)"></app-input>
+  </div>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div *ngIf="isLoading" class="skeleton-container">
+    <ion-skeleton-text animated class="skeleton-card"></ion-skeleton-text>
+    <ion-skeleton-text animated class="skeleton-card"></ion-skeleton-text>
+  </div>
+
+  <div *ngIf="!isLoading && !searchQuery">
+    <h2 class="section-title">Mejores Ofertas</h2>
+    <swiper-container slides-per-view="1.2" space-between="16">
+      <swiper-slide *ngFor="let deal of topDeals">
+        <app-card
+          [deal]="deal"
+          [storeLogo]="getStoreLogo(deal.storeID)"
+          [isFavorite]="favoriteId === deal.gameID"
+          (favoriteToggle)="toggleFavorite($event)"
+          (cardClick)="openGameModal($event)">
+        </app-card>
+      </swiper-slide>
+    </swiper-container>
+  </div>
+
+  <div *ngIf="!isLoading && searchQuery">
+    <h2 class="section-title">Resultados de búsqueda</h2>
+    <div class="grid-container" *ngIf="searchResults.length > 0">
+      <div *ngFor="let result of searchResults">
+        <app-card
+          [deal]="result"
+          [storeLogo]="getStoreLogo(result.storeID)"
+          [isFavorite]="favoriteId === result.gameID"
+          (favoriteToggle)="toggleFavorite($event)"
+          (cardClick)="openGameModal($event)">
+        </app-card>
+      </div>
+    </div>
+
+    <div *ngIf="searchResults.length === 0" class="empty-state">
+      <ion-icon name="search-outline"></ion-icon>
+      <p>No se encontraron ofertas para esta búsqueda.</p>
+    </div>
+  </div>
+
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" initialBreakpoint="0.85" [breakpoints]="[0, 0.85, 1]">
+    <ng-template>
+      <div class="modal-content" *ngIf="selectedGame">
+        <img [src]="selectedGame.thumb" class="modal-image" />
+        <h2 class="modal-title">{{ selectedGame.title }}</h2>
+
+        <div class="modal-info">
+          <p><strong>Precio original:</strong> ${{ selectedGame.deals[0].retailPrice }}</p>
+          <p><strong>Precio de oferta:</strong> ${{ selectedGame.deals[0].price }}</p>
+          <p><strong>Ahorro total:</strong> {{ selectedGame.deals[0].savings | number:'1.0-0' }}%</p>
+        </div>
+
+        <ion-button expand="block" class="view-deal-btn" (click)="openDeal(selectedGame.dealId)">
+          VER OFERTA
+        </ion-button>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

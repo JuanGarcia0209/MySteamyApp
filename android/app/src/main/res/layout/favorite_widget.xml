@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/widget_round_bg"
+  android:clipToOutline="true">
+
+  <ImageView
+    android:id="@+id/widget_image"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scaleType="centerCrop"
+    android:alpha="0.7" />
+
+  <TextView
+    android:id="@+id/widget_title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:text="Nombre del Juego"
+    android:textColor="#FFFFFF"
+    android:textSize="14sp"
+    android:textStyle="bold"
+    android:shadowColor="#000000"
+    android:shadowDx="2"
+    android:shadowDy="2"
+    android:shadowRadius="3" />
+
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="#CC000000"
+    android:padding="8dp">
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:layout_alignParentLeft="true">
+
+      <TextView
+        android:id="@+id/widget_store"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Epic Games Store"
+        android:textColor="#EEEEEE"
+        android:textSize="11sp" />
+
+      <TextView
+        android:id="@+id/widget_normal_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$89.99"
+        android:textColor="#AAAAAA"
+        android:textSize="10sp" />
+    </LinearLayout>
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentRight="true"
+      android:layout_centerVertical="true"
+      android:orientation="vertical"
+      android:gravity="end">
+
+      <TextView
+        android:id="@+id/widget_sale_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$4.49"
+        android:textColor="#E1FF00"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+      <TextView
+        android:id="@+id/widget_savings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-95%"
+        android:textColor="#00FF41"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+    </LinearLayout>
+  </RelativeLayout>
+
+</RelativeLayout>

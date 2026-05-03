@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportHeight="108"
+    android:viewportWidth="108">
+    <!-- Shopping Bag -->
+    <path
+        android:fillColor="#ffffff"
+        android:pathData="M32,35 L76,35 L80,88 L28,88 Z" />
+    <path
+        android:strokeColor="#ffffff"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M44,35 C44,22 64,22 64,35" />
+
+    <!-- Gamepad Icon inside the bag -->
+    <path
+        android:fillColor="#1B2838"
+        android:pathData="M42,52 C38,52 36,54 36,58 L36,66 C36,70 38,72 42,72 L46,72 L48,68 L60,68 L62,72 L66,72 C70,72 72,70 72,66 L72,58 C72,54 70,52 66,52 Z" />
+    <!-- Buttons/D-Pad details -->
+    <path
+        android:fillColor="#ffffff"
+        android:pathData="M42,58 L44,58 L44,60 L42,60 Z M40,60 L42,60 L42,62 L40,62 Z M64,58 A2,2 0 1,1 68,58 A2,2 0 1,1 64,58 Z M64,64 A2,2 0 1,1 68,64 A2,2 0 1,1 64,64 Z" />
+</vector>

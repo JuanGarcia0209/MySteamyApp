@@ -1,0 +1,28 @@
+<div class="glass-card" (click)="onCardClick()">
+  <div class="card-image-container">
+    <img [src]="deal.thumb" alt="Game Cover" class="card-image" />
+    <div class="savings-badge" *ngIf="deal.savings > 0">
+      -{{ deal.savings | number:'1.0-0' }}%
+    </div>
+    <ion-button fill="clear" class="favorite-btn" (click)="onFavoriteClick($event)">
+      <ion-icon slot="icon-only" [name]="isFavorite ? 'heart' : 'heart-outline'"></ion-icon>
+    </ion-button>
+  </div>
+
+  <div class="card-content">
+    <h3 class="game-title">{{ deal.title }}</h3>
+
+    <div class="price-row">
+      <span class="sale-price">${{ deal.salePrice }}</span>
+      <span class="normal-price" *ngIf="deal.normalPrice">${{ deal.normalPrice }}</span>
+    </div>
+
+    <div class="meta-row">
+      <div class="rating">
+        <ion-icon name="star"></ion-icon>
+        <span>{{ deal.dealRating }}</span>
+      </div>
+      <img *ngIf="storeLogo" [src]="storeLogo" alt="Store" class="store-logo" />
+    </div>
+  </div>
+</div>
