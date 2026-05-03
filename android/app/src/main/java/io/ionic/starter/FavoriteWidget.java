@@ -23,7 +23,7 @@ public class FavoriteWidget extends AppWidgetProvider {
     }
   }
 
-  static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+  public static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
     RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.favorite_widget);
 
     // Configurar clic para abrir la app (en cualquier estado)
@@ -33,8 +33,8 @@ public class FavoriteWidget extends AppWidgetProvider {
     views.setOnClickPendingIntent(R.id.widget_root, pendingIntent);
 
     try {
-      // Accedemos al almacenamiento de Capacitor
-      SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
+      // Leemos de las preferencias sincronizadas por MainActivity (Puente de datos)
+      SharedPreferences prefs = context.getSharedPreferences("WidgetPrefs", Context.MODE_PRIVATE);
       String favoriteGameJson = prefs.getString("favoriteGame", null);
 
       if (favoriteGameJson != null) {

@@ -40,14 +40,7 @@ export class GameProvider {
 
   async clearWidget() {
     try {
-      await AppWidget.updateWidget({
-        title: 'No hay favorito seleccionado',
-        salePrice: '',
-        retailPrice: '',
-        discount: '',
-        storeName: '',
-        thumb: ''
-      });
+      await Preferences.remove({ key: 'favoriteGame' });
     } catch (e) {
       console.warn('Could not clear widget', e);
     }
@@ -94,41 +87,28 @@ export class GameProvider {
     return value;
   }
 
-  // Método privado para enviar los datos a Java
+  // Método privado para enviar los datos a Java vía SharedPreferences (CapacitorStorage)
   private async updateNativeWidget(details: any) {
     try {
       const info = details.info;
       const bestDeal = details.deals && details.deals.length > 0 ? details.deals[0] : null;
 
-      const title = info.title;
-      const thumb = info.thumb;
-      const salePrice = bestDeal ? `$${bestDeal.price}` : 'N/A';
-      const retailPrice = bestDeal ? `$${bestDeal.retailPrice}` : '';
-      const discount = bestDeal && parseFloat(bestDeal.savings) > 0
-        ? `-${Math.round(parseFloat(bestDeal.savings))}%`
-        : '';
-
-      // Mapeo simple de tiendas comunes (puedes ampliarlo o usar getStores)
-      const stores: { [key: string]: string } = {
-        "1": "Steam",
-        "2": "GamersGate",
-        "3": "GreenManGaming",
-        "7": "GOG",
-        "11": "Humble Store",
-        "25": "Epic Games Store"
+      const favoriteGame = {
+        title: info.title,
+        thumb: info.thumb,
+        salePrice: bestDeal ? bestDeal.price : '0.00',
+        normalPrice: bestDeal ? bestDeal.retailPrice : '0.00',
+        savings: bestDeal ? parseFloat(bestDeal.savings) : 0,
+        storeID: bestDeal ? bestDeal.storeID : '1'
       };
-      const storeName = bestDeal ? (stores[bestDeal.storeID] || `Store ${bestDeal.storeID}`) : '';
 
-      await AppWidget.updateWidget({
-        title,
-        salePrice,
-        retailPrice,
-        discount,
-        storeName,
-        thumb
+      // Guardamos el objeto completo para que el widget de Java lo lea
+      await Preferences.set({
+        key: 'favoriteGame',
+        value: JSON.stringify(favoriteGame)
       });
     } catch (e) {
-      console.warn('Native widget update not available or failed', e);
+      console.warn('Error saving to Preferences for widget', e);
     }
   }
 }
