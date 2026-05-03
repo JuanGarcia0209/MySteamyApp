@@ -70,10 +70,53 @@ export class DealsPage implements OnInit {
     return store ? `https://www.cheapshark.com${store.images.icon}` : '';
   }
 
+  getStoreName(storeID: string): string {
+    const store = this.stores.find(s => s.storeID === storeID);
+    return store?.storeName || 'Store desconocida';
+  }
+
+  formatPrice(value: string | number | null | undefined): string {
+    const numericValue = Number(value);
+    if (Number.isNaN(numericValue)) {
+      return '$0.00';
+    }
+    return `$${numericValue.toFixed(2)}`;
+  }
+
+  formatSavings(value: string | number | null | undefined): string {
+    const numericValue = Number(value);
+    if (Number.isNaN(numericValue)) {
+      return '0%';
+    }
+    return `${Math.round(numericValue)}%`;
+  }
+
+  formatDate(timestamp: number | string | null | undefined): string {
+    if (!timestamp) {
+      return 'Fecha no disponible';
+    }
+
+    const date = new Date(Number(timestamp) * 1000);
+    return new Intl.DateTimeFormat('es-ES', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(date);
+  }
+
   openGameModal(deal: any) {
     const id = deal.gameID || deal.id;
     this.gameProvider.getGameDetails(id).subscribe(details => {
-      this.selectedGame = { ...details.info, dealId: deal.dealID, deals: details.deals };
+      const deals = [...(details.deals || [])].sort((firstDeal, secondDeal) => Number(firstDeal.price) - Number(secondDeal.price));
+
+      this.selectedGame = {
+        ...details.info,
+        steamAppID: details.info?.steamAppID || id,
+        dealId: deal.dealID,
+        deals,
+        bestDeal: deals[0] || null,
+        cheapestPriceEver: details.cheapestPriceEver || null,
+      };
       this.isModalOpen = true;
     });
   }

@@ -26,7 +26,7 @@
 
         <div class="deals-list" *ngIf="favoriteDeals.length > 0">
           <h3>Ofertas disponibles</h3>
-          <div class="deal-item" *ngFor="let deal of favoriteDeals | slice:0:3">
+          <div class="deal-item" *ngFor="let deal of favoriteDeals">
             <div class="deal-info">
               <span class="sale-price">${{ deal.price }}</span>
               <span class="retail-price">${{ deal.retailPrice }}</span>

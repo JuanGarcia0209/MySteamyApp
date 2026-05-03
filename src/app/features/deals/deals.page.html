@@ -49,21 +49,122 @@
     </div>
   </div>
 
-  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" initialBreakpoint="0.85" [breakpoints]="[0, 0.85, 1]">
+  <ion-modal
+    class="deals-modal"
+    [isOpen]="isModalOpen"
+    (didDismiss)="closeModal()"
+    [initialBreakpoint]="0.92"
+    [breakpoints]="[0, 0.75, 0.92, 1]">
     <ng-template>
-      <div class="modal-content" *ngIf="selectedGame">
-        <img [src]="selectedGame.thumb" class="modal-image" />
-        <h2 class="modal-title">{{ selectedGame.title }}</h2>
-
-        <div class="modal-info">
-          <p><strong>Precio original:</strong> ${{ selectedGame.deals[0].retailPrice }}</p>
-          <p><strong>Precio de oferta:</strong> ${{ selectedGame.deals[0].price }}</p>
-          <p><strong>Ahorro total:</strong> {{ selectedGame.deals[0].savings | number:'1.0-0' }}%</p>
+      <div class="modal-shell" *ngIf="selectedGame as game">
+        <div class="modal-hero">
+          <img [src]="game.thumb" [alt]="game.title" class="modal-image" />
+          <div class="modal-overlay"></div>
+          <ion-button fill="clear" class="close-btn" (click)="closeModal()">
+            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+          </ion-button>
+          <div class="hero-copy">
+            <span class="eyebrow">Steamy ID {{ game.steamAppID }}</span>
+            <h2 class="modal-title">{{ game.title }}</h2>
+            <p class="modal-subtitle">Comparativa de precios entre tiendas y mejor oferta actual.</p>
+          </div>
         </div>
 
-        <ion-button expand="block" class="view-deal-btn" (click)="openDeal(selectedGame.dealId)">
-          VER OFERTA
-        </ion-button>
+        <div class="modal-body">
+          <div class="price-summary">
+            <div class="summary-grid">
+              <div class="summary-metric">
+                <div class="metric-icon"><ion-icon name="flash-outline"></ion-icon></div>
+                <span class="metric-value">6.6</span>
+                <span class="metric-label">Deal Rating</span>
+              </div>
+              <div class="summary-metric">
+                <div class="metric-icon"><ion-icon name="star-outline"></ion-icon></div>
+                <span class="metric-value">93</span>
+                <span class="metric-label">Metacritic</span>
+              </div>
+            </div>
+
+            <div class="price-showcase">
+              <div class="price-main">
+                <span class="price-label">Mejor precio</span>
+                <div class="price-display">
+                  <strong class="price-current">{{ formatPrice(game.bestDeal?.price) }}</strong>
+                  <span class="price-original">{{ formatPrice(game.bestDeal?.retailPrice) }}</span>
+                </div>
+              </div>
+              <div class="savings-highlight">
+                <span class="savings-label">Ahorras</span>
+                <strong class="savings-amount">{{ formatPrice((game.bestDeal?.retailPrice || 0) - (game.bestDeal?.price || 0)) }}</strong>
+                <small>{{ formatSavings(game.bestDeal?.savings) }} descuento</small>
+              </div>
+            </div>
+
+            <ion-button class="store-badge" fill="clear" (click)="openDeal(game.bestDeal?.dealID)">
+              <div class="store-badge-text">
+                <small>Disponible en </small>
+                <strong>{{ getStoreName(game.bestDeal?.storeID) }}</strong>
+              </div>
+              <img *ngIf="getStoreLogo(game.bestDeal?.storeID)" [src]="getStoreLogo(game.bestDeal?.storeID)" [alt]="getStoreName(game.bestDeal?.storeID)" class="store-badge-img" />
+            </ion-button>
+          </div>
+
+          <div class="history-card" *ngIf="game.cheapestPriceEver">
+            <div>
+              <span class="section-kicker">Récord histórico</span>
+              <h3>{{ formatPrice(game.cheapestPriceEver.price) }}</h3>
+            </div>
+            <div class="history-meta">
+              <span>Registrado el</span>
+              <strong>{{ formatDate(game.cheapestPriceEver.date) }}</strong>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-pill">
+              <span>Ofertas disponibles</span>
+              <strong>{{ game.deals.length }}</strong>
+            </div>
+          </div>
+
+          <div class="offers-section">
+            <div class="section-header">
+              <span class="section-kicker">Todas las ofertas</span>
+              <span class="section-count">{{ game.deals.length }} tiendas</span>
+            </div>
+
+            <div class="offer-list">
+              <article class="offer-card" *ngFor="let deal of game.deals; let index = index">
+                <div class="offer-store">
+                  <img *ngIf="getStoreLogo(deal.storeID)" [src]="getStoreLogo(deal.storeID)" [alt]="getStoreName(deal.storeID)" class="store-avatar" />
+                  <div>
+                    <h4>{{ getStoreName(deal.storeID) }}</h4>
+                    <p>Oferta #{{ index + 1 }}</p>
+                  </div>
+                </div>
+
+                <div class="offer-metrics">
+                  <div>
+                    <span class="metric-label">Precio</span>
+                    <strong>{{ formatPrice(deal.price) }}</strong>
+                  </div>
+                  <div>
+                    <span class="metric-label">Retail</span>
+                    <strong>{{ formatPrice(deal.retailPrice) }}</strong>
+                  </div>
+                  <div>
+                    <span class="metric-label">Ahorro</span>
+                    <strong class="savings-text">{{ formatSavings(deal.savings) }}</strong>
+                  </div>
+                </div>
+
+                <ion-button expand="block" fill="solid" class="deal-action-btn" (click)="openDeal(deal.dealID)">
+                  Ver oferta
+                </ion-button>
+              </article>
+            </div>
+          </div>
+        </div>
       </div>
     </ng-template>
   </ion-modal>
