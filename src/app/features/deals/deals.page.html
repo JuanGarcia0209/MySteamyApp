@@ -71,42 +71,68 @@
         </div>
 
         <div class="modal-body">
-          <div class="price-summary">
-            <div class="summary-grid">
-              <div class="summary-metric">
-                <div class="metric-icon"><ion-icon name="flash-outline"></ion-icon></div>
-                <span class="metric-value">6.6</span>
-                <span class="metric-label">Deal Rating</span>
-              </div>
-              <div class="summary-metric">
-                <div class="metric-icon"><ion-icon name="star-outline"></ion-icon></div>
-                <span class="metric-value">93</span>
-                <span class="metric-label">Metacritic</span>
-              </div>
-            </div>
+          <!-- SECCIÓN: OFERTA SELECCIONADA -->
+          <div class="selected-offer-section">
+            <div class="section-label">Oferta Seleccionada</div>
 
-            <div class="price-showcase">
-              <div class="price-main">
-                <span class="price-label">Mejor precio</span>
-                <div class="price-display">
-                  <strong class="price-current">{{ formatPrice(game.bestDeal?.price) }}</strong>
-                  <span class="price-original">{{ formatPrice(game.bestDeal?.retailPrice) }}</span>
+            <div class="price-summary">
+              <div class="summary-grid">
+                <div class="summary-metric">
+                  <div class="metric-icon"><ion-icon name="flash-outline"></ion-icon></div>
+                  <span class="metric-value">{{ game.dealRating || 'N/A' }}</span>
+                  <span class="metric-label">Deal Rating</span>
+                </div>
+                <div class="summary-metric">
+                  <div class="metric-icon"><ion-icon name="star-outline"></ion-icon></div>
+                  <span class="metric-value">{{ game.metacriticScore || 'N/A' }}</span>
+                  <span class="metric-label">Metacritic</span>
                 </div>
               </div>
-              <div class="savings-highlight">
-                <span class="savings-label">Ahorras</span>
-                <strong class="savings-amount">{{ formatPrice((game.bestDeal?.retailPrice || 0) - (game.bestDeal?.price || 0)) }}</strong>
-                <small>{{ formatSavings(game.bestDeal?.savings) }} descuento</small>
-              </div>
-            </div>
 
-            <ion-button class="store-badge" fill="clear" (click)="openDeal(game.bestDeal?.dealID)">
-              <div class="store-badge-text">
-                <small>Disponible en </small>
-                <strong>{{ getStoreName(game.bestDeal?.storeID) }}</strong>
+              <div class="price-showcase">
+                <div class="price-main">
+                  <span class="price-label">Precio en oferta</span>
+                  <div class="price-display">
+                    <strong class="price-current">{{ formatPrice(game.selectedDeal?.salePrice) }}</strong>
+                    <span class="price-original">{{ formatPrice(game.selectedDeal?.normalPrice) }}</span>
+                  </div>
+                </div>
+                <div class="savings-highlight">
+                  <span class="savings-label">Ahorras</span>
+                  <strong class="savings-amount">{{ formatPrice((game.selectedDeal?.normalPrice || 0) - (game.selectedDeal?.salePrice || 0)) }}</strong>
+                  <small>{{ formatSavings(game.selectedDeal?.savings) }} descuento</small>
+                </div>
               </div>
-              <img *ngIf="getStoreLogo(game.bestDeal?.storeID)" [src]="getStoreLogo(game.bestDeal?.storeID)" [alt]="getStoreName(game.bestDeal?.storeID)" class="store-badge-img" />
-            </ion-button>
+
+              <ion-button class="store-badge" fill="clear" (click)="openDeal(game.selectedDeal?.dealID)">
+                <div class="store-badge-text">
+                  <small>Disponible en </small>
+                  <strong>{{ getStoreName(game.selectedDeal?.storeID) }}</strong>
+                </div>
+                <img *ngIf="getStoreLogo(game.selectedDeal?.storeID)" [src]="getStoreLogo(game.selectedDeal?.storeID)" [alt]="getStoreName(game.selectedDeal?.storeID)" class="store-badge-img" />
+              </ion-button>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: MEJOR OFERTA (solo si es diferente a la seleccionada) -->
+          <div class="best-offer-section" *ngIf="!game.isSelectedBest && game.bestDeal">
+            <div class="section-label">Mejor Oferta Disponible</div>
+
+            <div class="best-deal-card">
+              <div class="best-deal-price">
+                <span class="best-price-label">Precio más bajo</span>
+                <strong class="best-price">{{ formatPrice(game.bestDeal?.salePrice) }}</strong>
+              </div>
+
+              <div class="best-deal-store">
+                <img *ngIf="getStoreLogo(game.bestDeal?.storeID)" [src]="getStoreLogo(game.bestDeal?.storeID)" [alt]="getStoreName(game.bestDeal?.storeID)" class="best-store-img" />
+                <span class="best-store-name">{{ getStoreName(game.bestDeal?.storeID) }}</span>
+              </div>
+
+              <ion-button expand="block" fill="solid" class="best-deal-btn" (click)="openDeal(game.bestDeal?.dealID)">
+                Comprar aquí
+              </ion-button>
+            </div>
           </div>
 
           <div class="history-card" *ngIf="game.cheapestPriceEver">
@@ -146,11 +172,11 @@
                 <div class="offer-metrics">
                   <div>
                     <span class="metric-label">Precio</span>
-                    <strong>{{ formatPrice(deal.price) }}</strong>
+                      <strong>{{ formatPrice(deal.salePrice) }}</strong>
                   </div>
                   <div>
                     <span class="metric-label">Retail</span>
-                    <strong>{{ formatPrice(deal.retailPrice) }}</strong>
+                      <strong>{{ formatPrice(deal.normalPrice) }}</strong>
                   </div>
                   <div>
                     <span class="metric-label">Ahorro</span>

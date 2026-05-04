@@ -477,6 +477,91 @@ ion-modal.deals-modal::part(content) {
   text-transform: none;
 }
 
+.selected-offer-section,
+.best-offer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.64);
+  font-weight: 700;
+}
+
+.best-offer-section {
+  margin-top: 8px;
+}
+
+.best-deal-card {
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.08), rgba(77, 124, 255, 0.06));
+  border: 1.5px solid rgba(0, 210, 255, 0.2);
+  border-radius: 22px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.best-deal-price {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+}
+
+.best-price-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(0, 210, 255, 0.7);
+}
+
+.best-price {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #00d2ff;
+}
+
+.best-deal-store {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.best-store-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 4px;
+}
+
+.best-store-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.best-deal-btn {
+  --background: #00d2ff;
+  --color: #08111f;
+  --border-radius: 16px;
+  font-weight: 800;
+  height: 48px;
+  text-transform: none;
+}
+
 @media (max-width: 768px) {
   .price-summary,
   .detail-grid,

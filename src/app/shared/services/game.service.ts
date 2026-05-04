@@ -133,6 +133,42 @@ export class GameProvider {
     );
   }
 
+  // Método para obtener detalles enriquecidos del juego con dealRating y metacriticScore
+  getEnrichedGameDetails(gameTitle: string, gameID: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/deals?title=${encodeURIComponent(gameTitle)}&pageSize=10`).pipe(
+      map((dealsResponse: any) => {
+        // Filtrar por gameID para obtener todas las ofertas de este juego específico
+        const gameDeals = Array.isArray(dealsResponse)
+          ? dealsResponse.filter((deal: any) => deal.gameID === gameID)
+          : [];
+
+        if (gameDeals.length === 0) {
+          return null;
+        }
+
+        // Usar el primer resultado como referencia para info del juego
+        const firstDeal = gameDeals[0];
+        const sortedDeals = [...gameDeals].sort((a, b) => Number(a.salePrice) - Number(b.salePrice));
+
+        return {
+          info: {
+            internalName: firstDeal.internalName,
+            title: firstDeal.title,
+            thumb: firstDeal.thumb,
+            steamAppID: firstDeal.steamAppID,
+            dealRating: firstDeal.dealRating,
+            metacriticScore: firstDeal.metacriticScore,
+            steamRatingPercent: firstDeal.steamRatingPercent,
+            steamRatingText: firstDeal.steamRatingText,
+            releaseDate: firstDeal.releaseDate
+          },
+          deals: sortedDeals,
+          cheapestPriceEver: null // CheapShark API no proporciona esto en deals endpoint
+        };
+      })
+    );
+  }
+
   async saveFavoriteGame(gameId: string) {
     await Preferences.set({ key: this.FAVORITE_KEY, value: gameId });
     // Al guardar un nuevo favorito, pedimos sus detalles para actualizar el widget

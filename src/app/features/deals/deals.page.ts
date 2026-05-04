@@ -105,17 +105,30 @@ export class DealsPage implements OnInit {
   }
 
   openGameModal(deal: any) {
-    const id = deal.gameID || deal.id;
-    this.gameProvider.getGameDetails(id).subscribe(details => {
-      const deals = [...(details.deals || [])].sort((firstDeal, secondDeal) => Number(firstDeal.price) - Number(secondDeal.price));
+    const gameID = deal.gameID || deal.id;
+    const gameTitle = deal.title;
+
+    // Usar el nuevo método para obtener datos enriquecidos con dealRating y metacriticScore
+    this.gameProvider.getEnrichedGameDetails(gameTitle, gameID).subscribe(enrichedDetails => {
+      if (!enrichedDetails) {
+        console.error('No se encontraron detalles para el juego');
+        return;
+      }
+
+      const deals = [...(enrichedDetails.deals || [])].sort((firstDeal, secondDeal) => Number(firstDeal.salePrice) - Number(secondDeal.salePrice));
+      const bestDeal = deals[0] || null;
+
+      // Encontrar la oferta seleccionada en la lista
+      const selectedDeal = deals.find((d: any) => d.dealID === deal.dealID) || deal;
 
       this.selectedGame = {
-        ...details.info,
-        steamAppID: details.info?.steamAppID || id,
-        dealId: deal.dealID,
+        ...enrichedDetails.info,
         deals,
-        bestDeal: deals[0] || null,
-        cheapestPriceEver: details.cheapestPriceEver || null,
+        bestDeal,
+        selectedDeal,
+        // Indicar si la oferta seleccionada es la mejor (por precio)
+        isSelectedBest: selectedDeal.salePrice === bestDeal?.salePrice,
+        cheapestPriceEver: enrichedDetails.cheapestPriceEver || null,
       };
       this.isModalOpen = true;
     });

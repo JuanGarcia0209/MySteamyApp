@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content class="favorite-content">
 
   <div *ngIf="isLoading" class="skeleton-container">
     <ion-skeleton-text animated class="skeleton-image"></ion-skeleton-text>
@@ -18,24 +18,125 @@
     <p>Ve a la pestaña de Ofertas y pulsa el icono del corazón para añadir un juego a tus favoritos.</p>
   </div>
 
-  <div *ngIf="!isLoading && hasFavorite && favoriteGame" class="favorite-container">
-    <div class="glass-card full-card">
-      <img [src]="favoriteGame.thumb" class="favorite-image" />
-      <div class="favorite-content">
-        <h2 class="favorite-title">{{ favoriteGame.title }}</h2>
+  <div *ngIf="!isLoading && hasFavorite && favoriteGame as game" class="favorite-container">
+      <div class="favorite-hero">
+        <img [src]="game.thumb" [alt]="game.title" class="favorite-hero-image" />
+        <div class="favorite-overlay"></div>
+        <div class="hero-copy">
+          <span class="eyebrow">Juego favorito</span>
+          <h2 class="favorite-title">{{ game.title }}</h2>
+          <p class="favorite-subtitle">Resumen de la mejor oferta actual y todas las tiendas disponibles.</p>
+        </div>
+      </div>
 
-        <div class="deals-list" *ngIf="favoriteDeals.length > 0">
-          <h3>Ofertas disponibles</h3>
-          <div class="deal-item" *ngFor="let deal of favoriteDeals">
-            <div class="deal-info">
-              <span class="sale-price">${{ deal.price }}</span>
-              <span class="retail-price">${{ deal.retailPrice }}</span>
+      <div class="favorite-body">
+        <div class="price-summary">
+          <div class="summary-grid">
+            <div class="summary-metric">
+              <div class="metric-icon"><ion-icon name="flash-outline"></ion-icon></div>
+              <span class="metric-value">{{ game.dealRating || 'N/A' }}</span>
+              <span class="metric-label">Deal Rating</span>
             </div>
-            <ion-button fill="clear" (click)="openDeal(deal.dealID)">VER</ion-button>
+            <div class="summary-metric">
+              <div class="metric-icon"><ion-icon name="star-outline"></ion-icon></div>
+              <span class="metric-value">{{ game.metacriticScore || 'N/A' }}</span>
+              <span class="metric-label">Metacritic</span>
+            </div>
+          </div>
+
+          <div class="price-showcase">
+            <div class="price-main">
+              <span class="price-label">Mejor precio</span>
+              <div class="price-display">
+                <strong class="price-current">{{ formatPrice(game.bestDeal?.salePrice) }}</strong>
+                <span class="price-original">{{ formatPrice(game.bestDeal?.normalPrice) }}</span>
+              </div>
+            </div>
+            <div class="savings-highlight">
+              <span class="savings-label">Ahorras</span>
+              <strong class="savings-amount">{{ formatPrice((game.bestDeal?.normalPrice || 0) - (game.bestDeal?.salePrice || 0)) }}</strong>
+              <small>{{ formatSavings(game.bestDeal?.savings) }} descuento</small>
+            </div>
+          </div>
+
+          <ion-button class="store-badge" fill="clear" (click)="openDeal(game.bestDeal?.dealID)">
+            <div class="store-badge-text">
+              <small>Disponible en </small>
+              <strong>{{ getStoreName(game.bestDeal?.storeID) }}</strong>
+            </div>
+            <img *ngIf="getStoreLogo(game.bestDeal?.storeID)" [src]="getStoreLogo(game.bestDeal?.storeID)" [alt]="getStoreName(game.bestDeal?.storeID)" class="store-badge-img" />
+          </ion-button>
+        </div>
+
+        <div class="favorite-stats" *ngIf="game.deals?.length">
+          <div class="detail-pill">
+            <span>Ofertas disponibles</span>
+            <strong>{{ game.deals.length }}</strong>
+          </div>
+          <div class="detail-pill" *ngIf="game.releaseDate">
+            <span>Fecha de lanzamiento</span>
+            <strong>{{ formatDate(game.releaseDate) }}</strong>
+          </div>
+        </div>
+
+        <div class="best-offer-section" *ngIf="game.bestDeal && !game.isSelectedBest && game.deals?.length > 1">
+          <div class="section-label">Mejor oferta disponible</div>
+
+          <div class="best-deal-card">
+            <div class="best-deal-price">
+              <span class="best-price-label">Precio más bajo</span>
+              <strong class="best-price">{{ formatPrice(game.bestDeal?.salePrice) }}</strong>
+            </div>
+
+            <div class="best-deal-store">
+              <img *ngIf="getStoreLogo(game.bestDeal?.storeID)" [src]="getStoreLogo(game.bestDeal?.storeID)" [alt]="getStoreName(game.bestDeal?.storeID)" class="best-store-img" />
+              <span class="best-store-name">{{ getStoreName(game.bestDeal?.storeID) }}</span>
+            </div>
+
+            <ion-button expand="block" fill="solid" class="best-deal-btn" (click)="openDeal(game.bestDeal?.dealID)">
+              Comprar aquí
+            </ion-button>
+          </div>
+        </div>
+
+        <div class="offers-section" *ngIf="favoriteDeals.length > 0">
+          <div class="section-header">
+            <span class="section-kicker">Todas las ofertas</span>
+            <span class="section-count">{{ favoriteDeals.length }} tiendas</span>
+          </div>
+
+          <div class="offer-list">
+            <article class="offer-card" *ngFor="let deal of favoriteDeals; let index = index">
+              <div class="offer-store">
+                <img *ngIf="getStoreLogo(deal.storeID)" [src]="getStoreLogo(deal.storeID)" [alt]="getStoreName(deal.storeID)" class="store-avatar" />
+                <div>
+                  <h4>{{ getStoreName(deal.storeID) }}</h4>
+                  <p>Oferta #{{ index + 1 }}</p>
+                </div>
+              </div>
+
+              <div class="offer-metrics">
+                <div>
+                  <span class="metric-label">Precio</span>
+                  <strong>{{ formatPrice(deal.salePrice) }}</strong>
+                </div>
+                <div>
+                  <span class="metric-label">Normal</span>
+                  <strong>{{ formatPrice(deal.normalPrice) }}</strong>
+                </div>
+                <div>
+                  <span class="metric-label">Ahorro</span>
+                  <strong class="savings-text">{{ formatSavings(deal.savings) }}</strong>
+                </div>
+              </div>
+
+              <ion-button expand="block" fill="solid" class="deal-action-btn" (click)="openDeal(deal.dealID)">
+                Ver oferta
+              </ion-button>
+            </article>
           </div>
         </div>
       </div>
-    </div>
   </div>
 
 </ion-content>
