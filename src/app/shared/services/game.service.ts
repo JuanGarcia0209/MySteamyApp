@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { Preferences } from '@capacitor/preferences';
 import { registerPlugin } from '@capacitor/core';
 import { map } from 'rxjs/operators';
@@ -18,12 +18,35 @@ export interface AppWidgetPlugin {
 }
 const AppWidget = registerPlugin<AppWidgetPlugin>('AppWidget');
 
+interface StoreInfo {
+  storeID: string;
+  storeName: string;
+  images?: {
+    icon?: string;
+  };
+}
+
+interface WidgetPromotion {
+  dealID: string;
+  storeID: string;
+  store: {
+    name: string;
+    image: string;
+  };
+  originalPrice: string;
+  discount: string;
+  discountedPrice: string;
+  normalPrice: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class GameProvider {
   private baseUrl = 'https://www.cheapshark.com/api/1.0';
   private FAVORITE_KEY = 'favorite_game_id';
+  private storesCache: StoreInfo[] = [];
+  private storesPromise: Promise<StoreInfo[]> | null = null;
 
   constructor(private http: HttpClient) {
     this.checkAndRefreshWidget();
@@ -48,6 +71,44 @@ export class GameProvider {
 
   getStores(): Observable<any> {
     return this.http.get(`${this.baseUrl}/stores`);
+  }
+
+  private async getStoresSnapshot(): Promise<StoreInfo[]> {
+    if (this.storesCache.length > 0) {
+      return this.storesCache;
+    }
+
+    if (!this.storesPromise) {
+      this.storesPromise = firstValueFrom(this.getStores()).then((stores: StoreInfo[]) => {
+        this.storesCache = Array.isArray(stores) ? stores : [];
+        return this.storesCache;
+      }).catch(error => {
+        this.storesPromise = null;
+        throw error;
+      });
+    }
+
+    return this.storesPromise;
+  }
+
+  private getStoreFallbackName(storeID: string): string {
+    switch (storeID) {
+      case '1': return 'Steam';
+      case '2': return 'GamersGate';
+      case '3': return 'GreenManGaming';
+      case '7': return 'GOG';
+      case '8': return 'Origin';
+      case '11': return 'Humble Store';
+      case '15': return 'Fanatical';
+      case '21': return 'WinGameStore';
+      case '25': return 'Epic Games Store';
+      case '31': return 'Blizzard Shop';
+      default: return 'Digital Store';
+    }
+  }
+
+  private getStoreFallbackImage(storeID: string): string {
+    return `https://www.cheapshark.com/api/assets/store/${storeID}.png`;
   }
 
   getTopDeals(): Observable<any> {
@@ -90,15 +151,41 @@ export class GameProvider {
   // Método privado para enviar los datos a Java vía SharedPreferences (CapacitorStorage)
   private async updateNativeWidget(details: any) {
     try {
+      const stores = await this.getStoresSnapshot().catch(() => []);
       const info = details.info;
-      const bestDeal = details.deals && details.deals.length > 0 ? details.deals[0] : null;
+      const deals = Array.isArray(details.deals) ? [...details.deals] : [];
+      const sortedDeals = deals.sort((firstDeal, secondDeal) => Number(firstDeal.price) - Number(secondDeal.price));
+
+      const promotions: WidgetPromotion[] = sortedDeals.map((deal: any) => {
+        const store = stores.find(storeItem => storeItem.storeID === deal.storeID);
+        const storeName = store?.storeName || this.getStoreFallbackName(deal.storeID);
+        const storeImage = store?.images?.icon
+          ? `https://www.cheapshark.com${store.images.icon}`
+          : this.getStoreFallbackImage(deal.storeID);
+
+        return {
+          dealID: deal.dealID,
+          storeID: deal.storeID,
+          store: {
+            name: storeName,
+            image: storeImage,
+          },
+          originalPrice: deal.retailPrice || '0.00',
+          discount: deal.savings || '0',
+          discountedPrice: deal.price || '0.00',
+          normalPrice: deal.retailPrice || '0.00'
+        };
+      });
+
+      const bestDeal = promotions.length > 0 ? promotions[0] : null;
 
       const favoriteGame = {
         title: info.title,
         thumb: info.thumb,
-        salePrice: bestDeal ? bestDeal.price : '0.00',
-        normalPrice: bestDeal ? bestDeal.retailPrice : '0.00',
-        savings: bestDeal ? parseFloat(bestDeal.savings) : 0,
+        promotions,
+        salePrice: bestDeal ? bestDeal.discountedPrice : '0.00',
+        normalPrice: bestDeal ? bestDeal.normalPrice : '0.00',
+        savings: bestDeal ? parseFloat(bestDeal.discount) : 0,
         storeID: bestDeal ? bestDeal.storeID : '1'
       };
 

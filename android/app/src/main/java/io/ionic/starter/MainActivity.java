@@ -32,8 +32,11 @@ public class MainActivity extends BridgeActivity {
         data = getSharedPreferences("_cap_CapacitorStorage", MODE_PRIVATE).getString("favoriteGame", null);
       }
 
-      // Guardamos en un archivo exclusivo para el Widget
-      getSharedPreferences("WidgetPrefs", MODE_PRIVATE).edit().putString("favoriteGame", data).commit();
+      // Guardamos en un archivo exclusivo para el Widget y reiniciamos el índice de rotación
+      getSharedPreferences("WidgetPrefs", MODE_PRIVATE).edit()
+        .putString("favoriteGame", data)
+        .putInt("current_promotion_index", 0)
+        .commit();
 
       // 2. Notificar al Widget para que se redibuje
       AppWidgetManager manager = AppWidgetManager.getInstance(this);

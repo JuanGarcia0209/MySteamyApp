@@ -40,11 +40,22 @@
       android:background="#CC000000"
       android:padding="8dp">
 
+      <ImageView
+        android:id="@+id/widget_store_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="12dp"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_menu_gallery" />
+
       <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_alignParentLeft="true">
+        android:layout_toEndOf="@id/widget_store_image"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
 
         <TextView
           android:id="@+id/widget_store"
@@ -52,21 +63,22 @@
           android:layout_height="wrap_content"
           android:text="Tienda"
           android:textColor="#EEEEEE"
-          android:textSize="11sp" />
+          android:textSize="11sp"
+          android:textStyle="bold" />
 
         <TextView
           android:id="@+id/widget_normal_price"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="$0.00"
-          android:textColor="#AAAAAA"
+          android:textColor="#777777"
           android:textSize="10sp" />
       </LinearLayout>
 
       <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:orientation="vertical"
         android:gravity="end">
@@ -76,7 +88,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="$0.00"
-          android:textColor="#E1FF00"
+          android:textColor="#00D2FF"
           android:textSize="17sp"
           android:textStyle="bold" />
 
@@ -88,6 +100,14 @@
           android:textColor="#00FF41"
           android:textSize="11sp"
           android:textStyle="bold" />
+
+        <TextView
+          android:id="@+id/widget_promo_counter"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Oferta única"
+          android:textColor="#BBBBBB"
+          android:textSize="9sp" />
       </LinearLayout>
     </RelativeLayout>
   </RelativeLayout>
