@@ -112,7 +112,7 @@ export class GameProvider {
   }
 
   getTopDeals(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/deals?storeID=1&upperPrice=15&pageSize=10`);
+    return this.http.get(`${this.baseUrl}/deals?pageSize=10`);
   }
 
   searchDeals(title: string): Observable<any> {
